@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # todo_app
 
 A new Flutter project.
@@ -14,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# todo_app
+flutterの最初のプロジェクト
+>>>>>>> dc56fa628dd5ff5520ccc71f07d0f10de06ab6a7
