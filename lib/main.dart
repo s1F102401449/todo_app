@@ -2,37 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'screens/list_screen.dart';
 import 'services/todo_service.dart';
+import 'services/settings_service.dart';
+import 'screens/home_screen.dart';
 
 void main() async {
-  // Flutter のプラグイン初期化。非同期処理を行う場合は必須
+  // Flutter の非同期初期化
   WidgetsFlutterBinding.ensureInitialized();
 
-  // TodoCard内で DateFormat(..., 'ja') を使うので、起動時に一度だけ初期化しよう
-  await initializeDateFormatting('ja'); // 英語表記なら "en" など
+  // 日付フォーマット初期化
+  await initializeDateFormatting('ja');
 
-  // ① 端末保存（SharedPreferences）を使えるようにしよう
+  // SharedPreferences 初期化
   final prefs = await SharedPreferences.getInstance();
 
-  // ② prefs を渡して TodoService を作り、保存/読み込みの窓口を1つにまとめよう
+  // TodoService 作成
   final todoService = TodoService(prefs);
 
-  // ③ todoService をアプリ全体へ渡して、どの画面からでも使えるようにしよう
+  // アプリ起動
   runApp(MyApp(todoService: todoService));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.todoService});
 
-  // アプリ全体で共有する TodoService
   final TodoService todoService;
 
   @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  // アプリ設定（ダークモード・テーマカラー）
+  final AppSettings settings = AppSettings();
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      // ListScreen にtodoServiceを引数としてわたす
-      home: ListScreen(todoService: todoService),
+
+    return AnimatedBuilder(
+      animation: settings,
+
+      builder: (context, _) {
+
+        return MaterialApp(
+
+          theme: ThemeData(
+            primarySwatch: settings.themeColor,
+            brightness:
+                settings.darkMode ? Brightness.dark : Brightness.light,
+          ),
+
+          home: HomeScreen(
+            todoService: widget.todoService,
+            settings: settings,
+          ),
+        );
+      },
     );
   }
 }
