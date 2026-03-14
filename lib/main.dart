@@ -7,19 +7,15 @@ import 'services/settings_service.dart';
 import 'screens/home_screen.dart';
 
 void main() async {
-  // Flutter の非同期初期化
+
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 日付フォーマット初期化
   await initializeDateFormatting('ja');
 
-  // SharedPreferences 初期化
   final prefs = await SharedPreferences.getInstance();
 
-  // TodoService 作成
   final todoService = TodoService(prefs);
 
-  // アプリ起動
   runApp(MyApp(todoService: todoService));
 }
 
@@ -34,24 +30,46 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  // アプリ設定（ダークモード・テーマカラー）
   final AppSettings settings = AppSettings();
 
   @override
   Widget build(BuildContext context) {
 
     return AnimatedBuilder(
+
       animation: settings,
 
       builder: (context, _) {
 
         return MaterialApp(
 
+          debugShowCheckedModeBanner: false,
+
           theme: ThemeData(
-            primarySwatch: settings.themeColor,
-            brightness:
-                settings.darkMode ? Brightness.dark : Brightness.light,
+
+            useMaterial3: true,
+
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: settings.themeColor,
+              brightness: Brightness.light,
+            ),
+
           ),
+
+          darkTheme: ThemeData(
+
+            useMaterial3: true,
+
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: settings.themeColor,
+              brightness: Brightness.dark,
+            ),
+
+          ),
+
+          themeMode: settings.darkMode
+              ? ThemeMode.dark
+              : ThemeMode.light,
 
           home: HomeScreen(
             todoService: widget.todoService,

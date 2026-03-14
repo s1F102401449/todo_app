@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/services/settings_service.dart';
 import '../services/todo_service.dart';
 import 'list_screen.dart';
-import 'profile_screen.dart';
+import 'calendar_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,8 +23,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int _currentIndex = 1;
 
+  void changeTab(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   late final List<Widget> _screens = [
-    const ProfileScreen(),
+    CalendarScreen(
+      todoService: widget.todoService,
+      onOpenTaskTab: () => changeTab(1),
+    ),
     ListScreen(
       todoService: widget.todoService,
       settings: widget.settings,
@@ -51,12 +60,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "マイページ",
+            icon: Icon(Icons.calendar_month),
+            label: "カレンダー",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "ホーム",
+            icon: Icon(Icons.task),
+            label: "タスク",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

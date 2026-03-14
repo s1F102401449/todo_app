@@ -25,29 +25,34 @@ class TodoService {
       isInProgress: json['isInProgress'] ?? false,
     )).toList();
 
-    // ★ソート：重要度(trueが上) -> 日付順
+    // ソート
     todos.sort((a, b) {
-  // 1. まず「完了済み」を一番下に
-  if (a.isCompleted != b.isCompleted) {
-    return a.isCompleted ? 1 : -1;
-  }
-  // 2. 次に「着手中」を一番上に
-  if (a.isInProgress != b.isInProgress) {
-    return a.isInProgress ? -1 : 1;
-  }
-  // 3. 次に「重要」を優先
-  if (a.isImportant != b.isImportant) {
-    return a.isImportant ? -1 : 1;
-  }
-  // 4. 最後は「日付順」
-  return a.dueDate.compareTo(b.dueDate);
-});
+
+      // 完了済みを一番下
+      if (a.isCompleted != b.isCompleted) {
+        return a.isCompleted ? 1 : -1;
+      }
+
+      // 着手中を上
+      if (a.isInProgress != b.isInProgress) {
+        return a.isInProgress ? -1 : 1;
+      }
+
+      // 重要
+      if (a.isImportant != b.isImportant) {
+        return a.isImportant ? -1 : 1;
+      }
+
+      // 日付順
+      return a.dueDate.compareTo(b.dueDate);
+    });
 
     return todos;
-  } // ← ここで getTodos をしっかり閉じる！
+  }
 
   // 2. 保存
   Future<void> saveTodos(List<Todo> todos) async {
+
     final List<Map<String, dynamic>> jsonData = todos
         .map((todo) => {
               'id': todo.id,
@@ -64,10 +69,37 @@ class TodoService {
     await _prefs.setString(_storageKey, encoded);
   }
 
-  // 3. 削除（新しく追加）
+  // 3. 削除
   Future<void> deleteTodo(String id) async {
     final List<Todo> currentTodos = await getTodos();
     currentTodos.removeWhere((todo) => todo.id == id);
     await saveTodos(currentTodos);
+  }
+
+  // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+  // 4. カレンダー用：指定日のTodo取得
+  // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+  Future<List<Todo>> getTodosForDay(DateTime day) async {
+
+    final todos = await getTodos();
+
+    return todos.where((todo) {
+
+      final todoDate = DateTime(
+        todo.dueDate.year,
+        todo.dueDate.month,
+        todo.dueDate.day,
+      );
+
+      final targetDate = DateTime(
+        day.year,
+        day.month,
+        day.day,
+      );
+
+      return todoDate == targetDate;
+
+    }).toList();
   }
 }

@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 
 class AppSettings extends ChangeNotifier {
 
-  bool _darkMode = false;
-  MaterialColor _themeColor = Colors.blue;
+  bool darkMode = false;
 
-  bool get darkMode => _darkMode;
-  MaterialColor get themeColor => _themeColor;
+  Color themeColor = Colors.blue;
 
   void toggleDarkMode(bool value) {
-    _darkMode = value;
+    darkMode = value;
     notifyListeners();
   }
 
-  void changeColor(MaterialColor color) {
-    _themeColor = color;
+  void changeThemeColor(Color color) {
+    themeColor = color;
     notifyListeners();
   }
 }
